@@ -25,6 +25,29 @@ class BloodDonationSystem:
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
+    # def run(self):
+    #     while True:
+    #         print('1. Add donor')
+    #         print('2. Exit')
+    #         choice = input('Enter your choice: ')
+    #         if choice == '1':
+    #             name = input('Enter donor name: ')
+    #             blood_type = input('Enter blood type: ')
+    #             blood_type_obj = self.session.query(BloodType).filter_by(blood_type=blood_type).first()
+    #             if blood_type_obj is None:
+    #                 blood_type_obj = BloodType(blood_type=blood_type)
+    #                 self.session.add(blood_type_obj)
+    #             donor = Donor(name=name, blood_type=blood_type_obj)
+    #             self.session.add(donor)
+    #             self.session.commit()
+    #             print('Donor added successfully')
+    #         elif choice == '2':
+    #             break
+    #         else:
+    #             print('Invalid choice')
+ 
+
+
     def run(self):
         while True:
             print('1. Add donor')
@@ -45,4 +68,3 @@ class BloodDonationSystem:
                 break
             else:
                 print('Invalid choice')
- 
