@@ -1,11 +1,3 @@
-# main.py
-import os
-from blood_donation_system import BloodDonationSystem
-
-if __name__ == '__main__':
-    blood_donation_system = BloodDonationSystem()
-    blood_donation_system.run()
-
 # blood_donation_system.py
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
@@ -53,3 +45,4 @@ class BloodDonationSystem:
                 break
             else:
                 print('Invalid choice')
+ 
