@@ -1,32 +1,72 @@
-# main.py
-from utils.database import Base, engine, SessionLocal
-from models.donor import BloodDonor
-from models.recipient import BloodRecipient
-from models.blood_bank import BloodBank
-from utils.algorithms import donate_blood, get_blood_inventory
+import os
+from typing import List, Dict, Union
+from datetime import datetime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.ext.declarative import declarative_base
+from prettytable import PrettyTable
 
-# This line creates the database tables based on the defined models.
-Base.metadata.create_all(bind=engine)
+Base = declarative_base()
 
-def main():
-    # Your CLI application logic here
-    db = SessionLocal()
+class Donor(Base):
+    __tablename__ = 'donors'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    blood_group = Column(String)
+    age = Column(Integer)
+    gender = Column(String)
+    phone_number = Column(String)
+    email = Column(String)
+    donations = relationship('Donation', back_populates='donor')
 
-    try:
-        # Example: Use the donate_blood algorithm
-        donate_blood(db, donor_name="John Doe", blood_type="O+", recipient_name="Jane Doe", units_donated=2)
+class Donation(Base):
+    __tablename__ = 'donations'
+    id = Column(Integer, primary_key=True)
+    donor_id = Column(Integer, ForeignKey('donors.id'))
+    donation_date = Column(DateTime, default=datetime.utcnow)
+    location = Column(String)
+    donor = relationship('Donor', back_populates='donations')
 
-        # Example: Use the get_blood_inventory algorithm
-        blood_inventory = get_blood_inventory(db)
-        print("Current Blood Inventory:")
-        for blood_record in blood_inventory:
-            print(f"{blood_record.donor.name} donated {blood_record.units_donated} units to {blood_record.recipient.name}")
+class BloodBank:
+    def __init__(self, db_url: str):
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
 
-        # You can call more algorithms or perform other operations here
+    def add_donor(self, name: str, blood_group: str, age: int, gender: str, phone_number: str, email: str) -> None:
+        donor = Donor(name=name, blood_group=blood_group, age=age, gender=gender, phone_number=phone_number, email=email)
+        self.session.add(donor)
+        self.session.commit()
 
-    finally:
-        # Close the database connection in a 'finally' block to ensure it gets closed even if an exception occurs.
-        db.close()
+    def add_donation(self, donor_id: int, location: str) -> None:
+        donation = Donation(donor_id=donor_id, location=location)
+        self.session.add(donation)
+        self.session.commit()
 
-if __name__ == "__main__":
-    main()
+    def get_donors(self) -> List[Dict[str, Union[int, str]]]:
+        donors = self.session.query(Donor).all()
+        return [{'id': donor.id, 'name': donor.name, 'blood_group': donor.blood_group, 'age': donor.age, 'gender': donor.gender, 'phone_number': donor.phone_number, 'email': donor.email} for donor in donors]
+
+    def get_donations(self) -> List[Dict[str, Union[int, str]]]:
+        donations = self.session.query(Donation).all()
+        return [{'id': donation.id, 'donor_id': donation.donor_id, 'donation_date': donation.donation_date, 'location': donation.location} for donation in donations]
+
+if __name__ == '__main__':
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        db_url = 'sqlite:///blood_bank.db'
+    blood_bank = BloodBank(db_url=db_url)
+    blood_bank.add_donor(name='John Doe', blood_group='O+', age=25, gender='Male', phone_number='1234567890', email='johndoe@example.com')
+    blood_bank.add_donation(donor_id=1, location='Seattle')
+    donors = blood_bank.get_donors()
+    donations = blood_bank.get_donations()
+
+    # Display the contents of the donors table in a table format
+    table = PrettyTable()
+    table.field_names = ['ID', 'Name', 'Blood Group', 'Age', 'Gender', 'Phone Number', 'Email']
+    for donor in donors:
+        table.add_row([donor['id'], donor['name'], donor['blood_group'], donor['age'], donor['gender'], donor['phone_number'], donor['email']])
+    print(table)
+
+    print(donations)
