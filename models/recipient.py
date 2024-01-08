@@ -1,7 +1,7 @@
 # models/recipient.py
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from . import Base
+from .. import Base
 
 class BloodRecipient(Base):
     __tablename__ = "blood_recipients"

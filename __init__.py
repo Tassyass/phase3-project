@@ -1,9 +1,9 @@
 # main.py
-from utils.database import Base, engine, SessionLocal
 from models.donor import BloodDonor
 from models.recipient import BloodRecipient
 from models.blood_bank import BloodBank
 from utils.algorithms import donate_blood, get_blood_inventory
+from __init__ import Base, engine, SessionLocal  # Update this line
 
 # This line creates the database tables based on the defined models.
 Base.metadata.create_all(bind=engine)

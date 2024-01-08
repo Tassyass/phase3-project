@@ -1,7 +1,7 @@
 # models/blood_bank.py
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from . import Base
+from .. import Base
 
 class BloodBank(Base):
     __tablename__ = "blood_bank"
