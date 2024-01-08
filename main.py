@@ -40,12 +40,16 @@ class BloodDonationSystem:
             choice = input('Enter your choice: ')
             if choice == '1':
                 name = input('Enter donor name: ')
-                blood_type = input('Enter blood type: ')
-                blood_type_obj = self.session.query(BloodType).filter_by(blood_type=blood_type).first()
-                if blood_type_obj is None:
-                    blood_type_obj = BloodType(blood_type=blood_type)
-                    self.session.add(blood_type_obj)
-                donor = Donor(name=name, blood_type=blood_type_obj)
+                blood_group = input('Enter blood group: ')
+                age = input ('Enter your age: ')
+                gender = input ('Enter your gender: ')
+                phone_number = input ('Enter your phone number: ')
+                email = input ('Enter your email: ')
+                blood_group_obj = self.session.query(BloodType).filter_by(blood_group=blood_group).first()
+                if blood_group_obj is None:
+                    blood_group_obj = BloodType(blood_group=blood_group)
+                    self.session.add(blood_group_obj)
+                donor = Donor(name=name, blood_group=blood_group_obj)
                 self.session.add(donor)
                 self.session.commit()
                 print('Donor added successfully')
