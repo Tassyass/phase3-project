@@ -48,8 +48,6 @@ class BloodDonationSystem:
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
-   
-
 
     def run(self):
         while True:

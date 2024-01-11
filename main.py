@@ -1,4 +1,5 @@
 # main.py
+from sqlalchemy import Column, Integer, String
 import os
 from blood_donation_system import BloodDonationSystem
 
